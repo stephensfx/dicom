@@ -152,8 +152,18 @@ func (r *reader) readHeader() ([]*Element, error) {
 		return nil, err
 	}
 	if string(data[128:]) != magicWord {
+		if !r.opts.allowMissingPreamble {
+			return nil, fmt.Errorf("invalid magic word") // or a custom error if needed
+		}
+		debug.Log("No DICM magic word found — continuing without header")
+		
+		// Seek back to start to parse as raw data
+		if err := r.rawReader.Skip(int64(-len(data))); err != nil {
+			return nil, err
+		}
 		return nil, nil
 	}
+	
 
 	err = r.rawReader.Skip(128 + 4) // skip preamble + magic word
 	if err != nil {

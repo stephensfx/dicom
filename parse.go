@@ -260,7 +260,14 @@ type parseOptSet struct {
 	skipPixelData                       bool
 	skipProcessingPixelDataValue        bool
 	allowMissingMetaElementGroupLength  bool
+	allowMissingPreamble                bool // <-- Add this
 	customDecoderOfSpecificCharacterSet func(string) (*encoding.Decoder, error)
+}
+
+func WithAllowMissingPreamble() ParseOption {
+	return func(opts *parseOptSet) {
+		opts.allowMissingPreamble = true
+	}
 }
 
 func toParseOptSet(opts ...ParseOption) parseOptSet {
